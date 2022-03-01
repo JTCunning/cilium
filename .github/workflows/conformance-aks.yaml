@@ -169,9 +169,21 @@ jobs:
 
       - name: Install Cilium CLI
         run: |
-          git clone --depth 1 -b pr/pchaigno/increase-svc-timeout https://github.com/cilium/cilium-cli
-          cd cilium-cli
-          sudo make install
+          go version
+          mkdir -p $HOME/go/src/github.com/cilium
+          git clone -b pr/pchaigno/increase-svc-timeout https://github.com/cilium/cilium-cli $HOME/go/src/github.com/cilium/cilium-cli
+          cd $HOME/go/src/github.com/cilium/cilium-cli
+          export GOPATH=$HOME/go
+          echo $GOPATH
+          echo $GOROOT
+          echo $PATH
+          go mod tidy
+          go mod vendor
+          go mod verify
+          make
+          ./cilium version
+          # sudo -E make install
+          sudo cp cilium /usr/bin/cilium
           cilium version
 
       - name: Login to Azure
